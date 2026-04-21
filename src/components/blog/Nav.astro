@@ -1,0 +1,24 @@
+---
+interface Props { current?: string; }
+const { current = "feed" } = Astro.props;
+const items = [
+  { key: "home",    num: "01", href: "/" },
+  { key: "feed",    num: "02", href: "/blog" },
+  { key: "archive", num: "03", href: "/blog/archive" },
+  { key: "tags",    num: "04", href: "/blog/tags" },
+  { key: "about",   num: "05", href: "/about" },
+  { key: "contact", num: "06", href: "/contact" },
+];
+---
+<nav class="nav">
+  {items.map(it => (
+    <a href={it.href} class={it.key === current ? "current" : ""}>
+      <span class="num">{it.num}</span>{it.key.charAt(0).toUpperCase() + it.key.slice(1)}
+    </a>
+  ))}
+  <div class="spacer"></div>
+  <form class="search" method="get" action="/blog">
+    <span>?&gt;</span>
+    <input name="q" placeholder="search_feed.." />
+  </form>
+</nav>

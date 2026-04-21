@@ -1,0 +1,31 @@
+---
+interface Props {
+  entryCount?: number;
+  readerCount?: string;
+  since?: string;
+}
+const { entryCount = 14, readerCount = "2,841", since = "2023.11" } = Astro.props;
+const padded = String(entryCount).padStart(4, '0');
+---
+<section class="hero">
+  <span class="corner tl"></span><span class="corner tr"></span>
+  <span class="corner bl"></span><span class="corner br"></span>
+
+  <div class="hero-grid">
+    <div>
+      <div class="hero-tag">Personal terminal · Field transmissions</div>
+      <h1>Field<span class="y">.</span>Notes<span class="slash">/</span>from the <span class="y">Margins</span></h1>
+      <p class="sub">
+        Low-bandwidth broadcasts from a human operator. Essays on attention,
+        craft, and making things slowly — encoded in plain text, transmitted
+        without sponsors, filtered through a cracked screen.
+      </p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="k">Entries</div><div class="v">{padded}</div></div>
+      <div class="stat"><div class="k">Readers</div><div class="v cyan">{readerCount}</div></div>
+      <div class="stat"><div class="k">Since</div><div class="v ink">{since}</div></div>
+      <div class="stat"><div class="k">Signal</div><div class="v">STRONG</div></div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,17 @@
+---
+interface Props { items?: string[]; }
+const { items = [
+  "<b>NEW</b> Latest entry now live",
+  "now playing · <i>analog drift / lo-fi ambient</i>",
+  "<b>UPDATE</b> archive re-indexed",
+  "uplink · <b>stable</b> · packet loss 0.0%",
+  "<b>QUEUE</b> drafts pending · 03",
+] } = Astro.props;
+// Double the items so the marquee loop is seamless
+const track = [...items, ...items];
+---
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    {track.map(item => <span set:html={item} />)}
+  </div>
+</div>

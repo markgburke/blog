@@ -1,0 +1,33 @@
+---
+interface Props {
+  href: string;
+  number: string | number;     // "013" or 13
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  readMinutes?: number;
+}
+const { href, number, title, description, pubDate, tags = [], readMinutes } = Astro.props;
+const date = new Date(pubDate).toISOString().slice(0, 10).replace(/-/g, '·');
+const num = String(number).padStart(3, '0');
+---
+<article class="post">
+  <div class="post-id">
+    <span class="num">{num}</span>
+    {date}
+  </div>
+  <div class="post-body">
+    <h2><a href={href}>{title}</a></h2>
+    <p>{description}</p>
+    {tags.length > 0 && (
+      <div class="post-tags">
+        {tags.map(t => <span>{t}</span>)}
+      </div>
+    )}
+  </div>
+  <div class="post-meta">
+    {readMinutes ? `${String(readMinutes).padStart(2,'0')} min` : ''}
+    <a class="read" href={href}>READ</a>
+  </div>
+</article>

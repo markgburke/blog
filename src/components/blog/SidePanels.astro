@@ -1,0 +1,90 @@
+---
+interface Props {
+  archive?: { label: string; count: number }[];
+  tags?: { name: string; big?: boolean }[];
+}
+const {
+  archive = [
+    { label: "2026 · APR", count: 3 },
+    { label: "2026 · MAR", count: 3 },
+    { label: "2026 · FEB", count: 2 },
+    { label: "2026 · JAN", count: 2 },
+    { label: "2025 · DEC", count: 4 },
+  ],
+  tags = [
+    { name: "writing", big: true },
+    { name: "attention", big: true },
+    { name: "craft" }, { name: "habits" }, { name: "analog" },
+    { name: "reading" }, { name: "letters" }, { name: "work" },
+    { name: "money" }, { name: "places" }, { name: "time" }, { name: "advice" },
+  ],
+} = Astro.props;
+---
+<aside class="side">
+  <div class="panel sys">
+    <div class="panel-head">
+      <div class="title">SYS · Operator</div>
+      <div class="meta">uid·0x4B</div>
+    </div>
+    <div style="padding:14px">
+      <div class="row"><span class="k">handle</span><span class="v">m.burke</span></div>
+      <div class="row"><span class="k">loc</span><span class="v cyan">night_city / 06</span></div>
+      <div class="row"><span class="k">status</span><span class="v">writing</span></div>
+      <div class="row"><span class="k">queue</span><span class="v ink">03 drafts</span></div>
+      <div class="row"><span class="k">streak</span><span class="v">041 days</span></div>
+      <div class="row"><span class="k">mood</span><span class="v cyan">patient</span></div>
+    </div>
+  </div>
+
+  <div class="panel signal">
+    <div class="panel-head" style="border:0;padding:0;margin-bottom:6px;background:transparent">
+      <div class="title">Signal</div>
+      <div class="meta">rx · live</div>
+    </div>
+    <div class="bars" aria-hidden="true">
+      <span style="height:35%"></span><span style="height:72%"></span>
+      <span style="height:52%"></span><span style="height:90%"></span>
+      <span style="height:40%"></span><span style="height:66%"></span>
+      <span style="height:30%"></span><span style="height:80%"></span>
+      <span style="height:55%"></span><span style="height:45%"></span>
+      <span style="height:72%"></span><span style="height:38%"></span>
+    </div>
+    <div class="label"><span>08ms</span><span>NC-07</span><span>−42 dBm</span></div>
+  </div>
+
+  <div class="panel archive">
+    <div class="panel-head">
+      <div class="title">Archive</div>
+      <div class="meta">by month</div>
+    </div>
+    <ol>
+      {archive.map(a => (
+        <li><span>{a.label}</span><span class="c">{String(a.count).padStart(2,'0')}</span></li>
+      ))}
+    </ol>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <div class="title">Tags</div>
+      <div class="meta">top {tags.length}</div>
+    </div>
+    <div class="tagcloud">
+      {tags.map(t => (
+        <a href={`/blog/tags/${t.name}`} class={t.big ? "big" : ""}>{t.name}</a>
+      ))}
+    </div>
+  </div>
+
+  <div class="panel subscribe">
+    <div class="panel-head" style="border:0;padding:0;margin-bottom:10px;background:transparent">
+      <div class="title">Subscribe</div>
+      <div class="meta">no spam · manual send</div>
+    </div>
+    <p>Patch into the feed. One transmission per week, from the margins.</p>
+    <form class="field" method="post" action="/api/subscribe">
+      <input name="email" placeholder="operator@node.net" />
+      <button type="submit">JACK IN</button>
+    </form>
+  </div>
+</aside>

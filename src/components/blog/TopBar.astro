@@ -1,0 +1,22 @@
+---
+const now = new Date();
+const date = now.toLocaleDateString('en-US', { year:'numeric', month:'2-digit', day:'2-digit' }).replace(/\//g, '·');
+const time = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', hour12:false });
+---
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">M</span>
+    <span>MB//NET-FEED</span>
+  </div>
+  <div class="runner">
+    <span>NODE <b>NC-07</b></span>
+    <span>UPLINK <b>STABLE</b></span>
+    <span>BUILD <b>v4.14.0</b></span>
+    <span>LAT <b>08ms</b></span>
+  </div>
+  <div class="status">
+    <span><span class="dot"></span>ONLINE</span>
+    <span>{date}</span>
+    <span>{time} NCT</span>
+  </div>
+</header>

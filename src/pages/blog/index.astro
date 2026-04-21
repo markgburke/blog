@@ -1,62 +1,78 @@
 ---
 import { getCollection } from 'astro:content';
-import PaperPage from '../../layouts/PaperPage.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import BlogLayout     from '../../layouts/BlogLayout.astro';
+import TopBar         from '../../components/blog/TopBar.astro';
+import Hero           from '../../components/blog/Hero.astro';
+import Ticker         from '../../components/blog/Ticker.astro';
+import Nav            from '../../components/blog/Nav.astro';
+import FeaturedPost   from '../../components/blog/FeaturedPost.astro';
+import PostCard       from '../../components/blog/PostCard.astro';
+import SidePanels     from '../../components/blog/SidePanels.astro';
+import Footer         from '../../components/blog/Footer.astro';
 
-const all = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
-const total = all.length;
+const all = await getCollection('blog');
+const posts = all
+  .filter((p: any) => !p.data.draft)
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
 
-function readTime(body: string | undefined): number {
-	const words = (body ?? '').trim().split(/\s+/).filter(Boolean).length;
-	return Math.max(1, Math.round(words / 220));
-}
+const [featured, ...rest] = posts;
+const totalCount = posts.length;
 
-const posts = all.map((post, i) => ({
-	post,
-	number: String(total - i).padStart(3, '0'),
-	minutes: readTime(post.body),
-}));
+const readMinutes = (entry: any) => {
+  const words = (entry.body || '').split(/\s+/).filter(Boolean).length;
+  return Math.max(2, Math.round(words / 220));
+};
 
-const countLabel = `— ${String(total).padStart(2, '0')} ${total === 1 ? 'ENTRY' : 'ENTRIES'} —`;
+const tickerItems = [
+  `<b>NEW</b> ${featured?.data.title ?? 'New entry'} — entry <i>№${String(totalCount).padStart(3,'0')}</i>`,
+  'now playing · <i>analog drift / lo-fi ambient</i>',
+  `<b>UPDATE</b> archive re-indexed · ${totalCount} entries`,
+  'uplink · <b>stable</b> · packet loss 0.0%',
+  '<b>QUEUE</b> drafts pending · 03',
+];
 ---
+<BlogLayout title="NET/FEED — Mark Burke" description="Field notes & marginalia.">
+  <div class="app">
+    <TopBar />
+    <Hero entryCount={totalCount} />
+    <Ticker items={tickerItems} />
+    <Nav current="feed" />
 
-<PaperPage title={`Blog · ${SITE_TITLE}`} description={SITE_DESCRIPTION} activeNav="blog">
-	<h3 class="section-heading">
-		<span>Recent Entries</span>
-		<span class="count">{countLabel}</span>
-	</h3>
+    <div class="grid">
+      <section class="panel">
+        <div class="panel-head">
+          <div class="title">Feed · Recent Transmissions</div>
+          <div class="meta">{posts.length} shown · sort: chronological ↓</div>
+        </div>
 
-	<section class="posts">
-		{
-			posts.map(({ post, number, minutes }) => (
-				<article class="post">
-					<div class="post-date">
-						<FormattedDate date={post.data.pubDate} />
-						<span class="no">№ {number}</span>
-					</div>
-					<div class="post-body">
-						<h2>
-							<a href={`/blog/${post.id}/`}>{post.data.title}</a>
-						</h2>
-						<p class="post-excerpt">{post.data.description}</p>
-						{post.data.tags && post.data.tags.length > 0 && (
-							<div class="post-tags">
-								{post.data.tags.map((t: string) => <span>{t}</span>)}
-							</div>
-						)}
-					</div>
-					<div class="post-meta">
-						{minutes} min
-						<br />
-						<a class="read-link" href={`/blog/${post.id}/`}>
-							read &rarr;
-						</a>
-					</div>
-				</article>
-			))
-		}
-	</section>
-</PaperPage>
+        {featured && (
+          <FeaturedPost
+            href={`/blog/${featured.id}/`}
+            number={totalCount}
+            title={featured.data.title}
+            description={featured.data.description}
+            pubDate={featured.data.pubDate}
+            tags={featured.data.tags ?? []}
+            readMinutes={readMinutes(featured)}
+          />
+        )}
+
+        {rest.map((post, i) => (
+          <PostCard
+            href={`/blog/${post.id}/`}
+            number={totalCount - 1 - i}
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            tags={post.data.tags ?? []}
+            readMinutes={readMinutes(post)}
+          />
+        ))}
+      </section>
+
+      <SidePanels />
+    </div>
+
+    <Footer />
+  </div>
+</BlogLayout>
