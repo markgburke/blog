@@ -13,8 +13,11 @@ type Props = CollectionEntry<'blog'>;
 
 const post = Astro.props;
 const { Content } = await render(post);
+
+const words = (post.body || '').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(2, Math.round(words / 220));
 ---
 
-<BlogPost {...post.data} slug={post.id}>
+<BlogPost {...post.data} slug={post.id} minutes={minutes}>
 	<Content />
 </BlogPost>

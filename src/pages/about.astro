@@ -1,21 +1,32 @@
 ---
-import PaperPage from '../layouts/PaperPage.astro';
-import { SITE_TITLE } from '../consts';
+import BlogLayout from '../layouts/BlogLayout.astro';
+import TopBar from '../components/blog/TopBar.astro';
+import Nav from '../components/blog/Nav.astro';
+import Footer from '../components/blog/Footer.astro';
 ---
+<BlogLayout title="About · Mark Burke" description="About Mark Burke.">
+  <div class="app">
+    <TopBar />
+    <Nav current="about" />
 
-<PaperPage title={`About · ${SITE_TITLE}`} description="About Mark Burke" activeNav="about">
-	<h3 class="section-heading">
-		<span>About</span>
-	</h3>
-	<div class="prose">
-		<p>
-			I'm Mark — an IT professional living and working on Vancouver Island.
-			Outside of work, you'll find me reading, playing video games, spending
-			time outdoors, or looking after my two cats.
-		</p>
-		<p>
-			I'm curious about tech and AI, and I like learning how things work. This
-			blog is where I write about what I'm picking up along the way.
-		</p>
-	</div>
-</PaperPage>
+    <section class="panel">
+      <div class="panel-head">
+        <div class="title">Operator · Bio</div>
+        <div class="meta">about · /about</div>
+      </div>
+      <div class="prose-cyberpunk">
+        <p>
+          I'm Mark — an IT professional living and working on Vancouver Island.
+          Outside of work, you'll find me reading, playing video games, spending time
+          outdoors, or looking after my two cats.
+        </p>
+        <p>
+          I'm curious about tech and AI, and I like learning how things work.
+          This node is where I log what I'm picking up along the way.
+        </p>
+      </div>
+    </section>
+
+    <Footer />
+  </div>
+</BlogLayout>

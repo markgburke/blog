@@ -1,44 +1,76 @@
 ---
 import { getCollection } from 'astro:content';
-import PaperPage from '../layouts/PaperPage.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import BlogLayout from '../layouts/BlogLayout.astro';
+import TopBar from '../components/blog/TopBar.astro';
+import Hero from '../components/blog/Hero.astro';
+import Ticker from '../components/blog/Ticker.astro';
+import Nav from '../components/blog/Nav.astro';
+import FeaturedPost from '../components/blog/FeaturedPost.astro';
+import Footer from '../components/blog/Footer.astro';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+const all = await getCollection('blog');
+const posts = all.sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime(),
 );
-const latest = posts[0];
+const [featured] = posts;
+const totalCount = posts.length;
+
+const readMinutes = (entry: any) => {
+  const words = (entry?.body || '').split(/\s+/).filter(Boolean).length;
+  return Math.max(2, Math.round(words / 220));
+};
+
+const tickerItems = featured
+  ? [
+      `<b>NEW</b> ${featured.data.title} — entry <i>№${String(totalCount).padStart(3, '0')}</i>`,
+      'now playing · <i>analog drift / lo-fi ambient</i>',
+      `<b>UPDATE</b> archive re-indexed · ${totalCount} entries`,
+      'uplink · <b>stable</b> · packet loss 0.0%',
+    ]
+  : ['uplink · <b>stable</b> · feed empty · first transmission pending'];
 ---
+<BlogLayout title="Mark Burke — Field Notes" description="Low-bandwidth broadcasts from a human operator.">
+  <div class="app">
+    <TopBar />
+    <Hero entryCount={totalCount} />
+    <Ticker items={tickerItems} />
+    <Nav current="home" />
 
-<PaperPage title={SITE_TITLE} description={SITE_DESCRIPTION} activeNav="home">
-	<h3 class="section-heading">
-		<span>Welcome</span>
-	</h3>
+    <section class="panel">
+      <div class="panel-head">
+        <div class="title">Operator · Welcome</div>
+        <div class="meta">home · /</div>
+      </div>
+      <div class="prose-cyberpunk">
+        <p>
+          Hey, I'm Mark — an IT professional on Vancouver Island. This node broadcasts
+          field notes on AI, game dev, and whatever tool I'm prying apart that week.
+        </p>
+        <p>
+          Head to the <a href="/blog">feed</a> to see recent transmissions, or
+          read a bit <a href="/about">about the operator</a>.
+        </p>
+      </div>
+    </section>
 
-	<section class="intro">
-		<p class="lede">Hey, I'm Mark.</p>
-		<p>
-			I write about AI, game dev, and the tools I'm learning along the way.
-			This is where I think out loud and share what I'm building.
-		</p>
-		<p>
-			Wander over to the <a href="/blog">blog</a> to see what I've been working on —
-			or read a bit <a href="/about">about me</a>.
-		</p>
+    {featured && (
+      <section class="panel" style="margin-top:18px">
+        <div class="panel-head">
+          <div class="title">Latest Transmission</div>
+          <div class="meta">entry № {String(totalCount).padStart(3, '0')}</div>
+        </div>
+        <FeaturedPost
+          href={`/blog/${featured.id}/`}
+          number={totalCount}
+          title={featured.data.title}
+          description={featured.data.description}
+          pubDate={featured.data.pubDate}
+          tags={featured.data.tags ?? []}
+          readMinutes={readMinutes(featured)}
+        />
+      </section>
+    )}
 
-		{
-			latest && (
-				<div class="latest-card">
-					<div class="kicker">— Latest Entry —</div>
-					<h2>
-						<a href={`/blog/${latest.id}/`}>{latest.data.title}</a>
-					</h2>
-					<p>{latest.data.description}</p>
-					<a class="read-link" href={`/blog/${latest.id}/`}>
-						Read &rarr;
-					</a>
-				</div>
-			)
-		}
-	</section>
-</PaperPage>
+    <Footer />
+  </div>
+</BlogLayout>

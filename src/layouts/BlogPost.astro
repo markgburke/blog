@@ -1,44 +1,58 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
-import PaperPage from './PaperPage.astro';
+import BlogLayout from './BlogLayout.astro';
+import TopBar from '../components/blog/TopBar.astro';
+import Nav from '../components/blog/Nav.astro';
+import Footer from '../components/blog/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import { SITE_TITLE } from '../consts';
 
-type Props = CollectionEntry<'blog'>['data'] & { slug?: string };
+type Props = CollectionEntry<'blog'>['data'] & { slug?: string; minutes?: number };
 
-const { title, description, pubDate, updatedDate, tags, slug } = Astro.props;
+const { title, description, pubDate, updatedDate, tags, slug, minutes } = Astro.props;
 
 const all = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 const total = all.length;
 const idx = slug ? all.findIndex((p) => p.id === slug) : -1;
 const number = idx >= 0 ? String(total - idx).padStart(3, '0') : null;
+const dateStr = new Date(pubDate).toISOString().slice(0, 10).replace(/-/g, '·');
 ---
+<BlogLayout title={`${title} — Mark Burke`} description={description}>
+  <div class="app">
+    <TopBar />
+    <Nav current="feed" />
 
-<PaperPage title={`${title} · ${SITE_TITLE}`} description={description} activeNav="blog">
-	<article>
-		<header class="article-head">
-			<div class="kicker">
-				{number && <span class="no">№ {number}</span>}
-				<FormattedDate date={pubDate} />
-				{tags && tags.length > 0 && tags.map((t) => <span>#{t}</span>)}
-			</div>
-			<h1>{title}</h1>
-			{description && <p class="description">{description}</p>}
-			{
-				updatedDate && (
-					<div class="last-updated-on">
-						Last updated on <FormattedDate date={updatedDate} />
-					</div>
-				)
-			}
-		</header>
-		<div class="prose">
-			<slot />
-		</div>
-		<div class="article-back">
-			<a href="/blog">&larr; Back to recent entries</a>
-		</div>
-	</article>
-</PaperPage>
+    <section class="panel">
+      <div class="panel-head">
+        <div class="title">Entry · Transmission</div>
+        <div class="meta">
+          {number && <>№ {number} · </>}{dateStr}{minutes ? ` · ${String(minutes).padStart(2, '0')} min` : ''}
+        </div>
+      </div>
+
+      <article class="prose-cyberpunk">
+        <header class="post-article-head">
+          <h1>{title}</h1>
+          {description && <p class="sub">{description}</p>}
+          {tags && tags.length > 0 && (
+            <div class="post-tags">
+              {tags.map((t) => <span>{t}</span>)}
+            </div>
+          )}
+          {updatedDate && (
+            <div class="last-updated">
+              Last updated <FormattedDate date={updatedDate} />
+            </div>
+          )}
+        </header>
+        <slot />
+        <footer class="post-back">
+          <a href="/blog">&larr; Back to feed</a>
+        </footer>
+      </article>
+    </section>
+
+    <Footer />
+  </div>
+</BlogLayout>
