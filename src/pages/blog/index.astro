@@ -1,114 +1,62 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
+import PaperPage from '../../layouts/PaperPage.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
 
-const posts = (await getCollection('blog')).sort(
+const all = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+const total = all.length;
+
+function readTime(body: string | undefined): number {
+	const words = (body ?? '').trim().split(/\s+/).filter(Boolean).length;
+	return Math.max(1, Math.round(words / 220));
+}
+
+const posts = all.map((post, i) => ({
+	post,
+	number: String(total - i).padStart(3, '0'),
+	minutes: readTime(post.body),
+}));
+
+const countLabel = `— ${String(total).padStart(2, '0')} ${total === 1 ? 'ENTRY' : 'ENTRIES'} —`;
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+<PaperPage title={`Blog · ${SITE_TITLE}`} description={SITE_DESCRIPTION} activeNav="blog">
+	<h3 class="section-heading">
+		<span>Recent Entries</span>
+		<span class="count">{countLabel}</span>
+	</h3>
+
+	<section class="posts">
+		{
+			posts.map(({ post, number, minutes }) => (
+				<article class="post">
+					<div class="post-date">
+						<FormattedDate date={post.data.pubDate} />
+						<span class="no">№ {number}</span>
+					</div>
+					<div class="post-body">
+						<h2>
+							<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+						</h2>
+						<p class="post-excerpt">{post.data.description}</p>
+						{post.data.tags && post.data.tags.length > 0 && (
+							<div class="post-tags">
+								{post.data.tags.map((t: string) => <span>{t}</span>)}
+							</div>
+						)}
+					</div>
+					<div class="post-meta">
+						{minutes} min
+						<br />
+						<a class="read-link" href={`/blog/${post.id}/`}>
+							read &rarr;
+						</a>
+					</div>
+				</article>
+			))
+		}
+	</section>
+</PaperPage>

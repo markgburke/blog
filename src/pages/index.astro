@@ -1,27 +1,44 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+import PaperPage from '../layouts/PaperPage.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const latest = posts[0];
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>Hey, I'm Mark.</h1>
-			<p>
-				I write about AI, game dev, and the tools I'm learning along the way.
-				This is where I think out loud and share what I'm building.
-			</p>
-			<p>
-				Check out the <a href="/blog">blog</a> to see what I've been working on.
-			</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+<PaperPage title={SITE_TITLE} description={SITE_DESCRIPTION} activeNav="home">
+	<h3 class="section-heading">
+		<span>Welcome</span>
+	</h3>
+
+	<section class="intro">
+		<p class="lede">Hey, I'm Mark.</p>
+		<p>
+			I write about AI, game dev, and the tools I'm learning along the way.
+			This is where I think out loud and share what I'm building.
+		</p>
+		<p>
+			Wander over to the <a href="/blog">blog</a> to see what I've been working on —
+			or read a bit <a href="/about">about me</a>.
+		</p>
+
+		{
+			latest && (
+				<div class="latest-card">
+					<div class="kicker">— Latest Entry —</div>
+					<h2>
+						<a href={`/blog/${latest.id}/`}>{latest.data.title}</a>
+					</h2>
+					<p>{latest.data.description}</p>
+					<a class="read-link" href={`/blog/${latest.id}/`}>
+						Read &rarr;
+					</a>
+				</div>
+			)
+		}
+	</section>
+</PaperPage>

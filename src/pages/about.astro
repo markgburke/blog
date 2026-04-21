@@ -1,20 +1,21 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import PaperPage from '../layouts/PaperPage.astro';
+import { SITE_TITLE } from '../consts';
 ---
 
-<Layout
-	title="About Me"
-	description="About Mark Burke"
-	pubDate={new Date('April 02 2026')}
->
-	<p>
-		I'm Mark — an IT professional living and working on Vancouver Island.
-		Outside of work, you'll find me reading, playing video games, spending time
-		outdoors, or looking after my two cats.
-	</p>
-
-	<p>
-		I'm curious about tech and AI, and I like learning how things work.
-		This blog is where I write about what I'm picking up along the way.
-	</p>
-</Layout>
+<PaperPage title={`About · ${SITE_TITLE}`} description="About Mark Burke" activeNav="about">
+	<h3 class="section-heading">
+		<span>About</span>
+	</h3>
+	<div class="prose">
+		<p>
+			I'm Mark — an IT professional living and working on Vancouver Island.
+			Outside of work, you'll find me reading, playing video games, spending
+			time outdoors, or looking after my two cats.
+		</p>
+		<p>
+			I'm curious about tech and AI, and I like learning how things work. This
+			blog is where I write about what I'm picking up along the way.
+		</p>
+	</div>
+</PaperPage>

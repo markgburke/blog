@@ -2,6 +2,7 @@
 title: 'Hyperfocus Is Not a Superpower'
 description: "The 'harness your hyperfocus' advice gets the mechanism wrong. The evidence says hyperfocus is dysregulated attention, not enhanced focus — and the fix isn't willpower."
 pubDate: 'Apr 20 2026'
+tags: ['attention', 'adhd', 'neuroscience']
 ---
 
 The popular story about hyperfocus goes like this: ADHD brains have an attention problem, but the upside is that when we lock onto something interesting, we outwork everyone. Harness it, and you have a superpower.
